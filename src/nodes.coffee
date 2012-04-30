@@ -1911,6 +1911,28 @@ exports.If = class If extends Base
   unfoldSoak: ->
     @soak and this
 
+
+#### CS399 extensions: Module
+exports.Module = class Module extends Base
+  constructor: (@name, @code) ->
+    console.log "Captured module name: #{@name}"
+
+  isAssignable: YES
+
+  makeReturn: (res) ->
+    this
+
+  compileNode: (o) ->
+    console.log "Compiling module name: #{@name}"
+
+    o.indent  += TAB
+    actualCode = @code.compile o, LEVEL_TOP
+
+    """#{@tab}function() {
+    #{actualCode}
+    }"""
+
+
 # Faux-Nodes
 # ----------
 # Faux-nodes are never created by the grammar, but are used during code

@@ -98,6 +98,9 @@ grammar =
     o 'Switch'
     o 'Class'
     o 'Throw'
+
+    # CS399 extension
+    o 'Module'
   ]
 
   # An indented block of expressions. Note that the [Rewriter](rewriter.html)
@@ -542,6 +545,13 @@ grammar =
     o 'SimpleAssignable COMPOUND_ASSIGN
        INDENT Expression OUTDENT',              -> new Assign $1, $4, $2
     o 'SimpleAssignable EXTENDS Expression',    -> new Extends $1, $3
+  ]
+
+
+  # CS399 extensions
+  Module: [
+    o 'MODULE STRING Block',                    -> new Module $2, $3
+    o 'MODULE Block',                           -> new Module null, $2
   ]
 
 
