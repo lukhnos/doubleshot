@@ -550,8 +550,8 @@ grammar =
 
   # CS399 extensions
   Module: [
-    o 'MODULE STRING Block',                    -> new Module $2, $3
-    o 'MODULE Block',                           -> new Module null, $2
+    o 'MODULE STRING Block',                    -> new ExternalModule $2, $3
+    o 'MODULE Block',                           -> new ExternalModule null, $2
   ]
 
 

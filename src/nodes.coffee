@@ -1912,9 +1912,18 @@ exports.If = class If extends Base
     @soak and this
 
 
-#### CS399 extensions: Module
-exports.Module = class Module extends Base
+#### CS399 extensions: ExternalModule
+exports.ExternalModule = class ExternalModule extends Base
   constructor: (@name, @code) ->
+
+    # assign name if there isn't one
+    if !@name
+      @name = "\"unnamed-module.js\""
+
+    # add .js extension if there isn't one
+
+    # check if module of same name already exists
+
     console.log "Captured module name: #{@name}"
 
   isAssignable: YES
@@ -1926,11 +1935,15 @@ exports.Module = class Module extends Base
     console.log "Compiling module name: #{@name}"
 
     o.indent  += TAB
-    actualCode = @code.compile o, LEVEL_TOP
+    actualCode = @code.compileRoot { bare: yes }
 
-    """#{@tab}function() {
-    #{actualCode}
-    }"""
+    console.log "emitting actual code:\n###################\n#{actualCode}\n###################\n"
+
+    # attach this.onmessage and stuff
+
+    # return the module name in the case of HTML5 worker
+    "#{@name}"
+
 
 
 # Faux-Nodes
