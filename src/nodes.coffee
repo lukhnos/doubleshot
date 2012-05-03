@@ -1937,6 +1937,8 @@ exports.ExternalModule = class ExternalModule extends Base
     o.indent  += TAB
     actualCode = @code.compileRoot { bare: yes }
 
+    console.log "using HTML5 worker" if o.worker
+    console.log "using node.js process" if o.nodejsprocess
     console.log "emitting actual code:\n###################\n#{actualCode}\n###################\n"
 
     # attach this.onmessage and stuff

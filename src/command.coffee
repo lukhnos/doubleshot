@@ -46,6 +46,9 @@ SWITCHES = [
   ['-t', '--tokens',          'print out the tokens that the lexer/rewriter produce']
   ['-v', '--version',         'display the version number']
   ['-w', '--watch',           'watch scripts for changes and rerun commands']
+  ['-N', '--nodejsprocess',   'emit concurrency code using node.js process']
+  ['-W', '--worker',          'emti concurrency code using HTML5 worker (and produce worker files)']
+
 ]
 
 # Top-level objects shared by all the functions.
@@ -316,7 +319,7 @@ parseOptions = ->
 
 # The compile-time options to pass to the CoffeeScript compiler.
 compileOptions = (filename) ->
-  {filename, bare: opts.bare, header: opts.compile}
+  {filename, bare: opts.bare, header: opts.compile, nodejsprocess: opts.nodejsprocess, worker: opts.worker}
 
 # Start up a new Node.js instance with the arguments in `--nodejs` passed to
 # the `node` binary, preserving the other options.
