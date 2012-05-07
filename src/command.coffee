@@ -133,10 +133,16 @@ compileScript = (file, input, base) ->
       sourceCode[sources.indexOf(t.file)] = t.input
       compileJoin()
     else
-      t.output = CoffeeScript.compile t.input, t.options
+      # CS399
+      # t.output = CoffeeScript.compile t.input, t.options
+      output = CoffeeScript.compileWithExtraOutput t.input, t.options
+      t.output = output.js
+
       CoffeeScript.emit 'success', task
       if o.print          then printLine t.output.trim()
-      else if o.compile   then writeJs t.file, t.output, base
+      # CS399
+      # else if o.compile   then writeJs t.file, t.output, base
+      else if o.compile   then writeJsWithModules t.file, t.output, output.modules, base
       else if o.lint      then lint t.file, t.output
   catch err
     CoffeeScript.emit 'failure', err, task
@@ -279,6 +285,34 @@ writeJs = (source, js, base) ->
         timeLog "compiled #{source}"
   path.exists jsDir, (exists) ->
     if exists then compile() else exec "mkdir -p #{jsDir}", compile
+
+# CS399
+writeJsWithModules = (source, js, modules, base) ->
+
+  jsPath = outputPath source, base
+  jsDir  = path.dirname jsPath
+
+  console.log "writing modules, source: #{source}, base: #{base}, jsp: #{jsPath}, jsDir: #{jsDir}, #{JSON.stringify modules}"
+
+  compile = ->
+    for name, moduleJS of modules
+      modulePath = path.join jsDir, name
+      console.log "write: #{modulePath}"
+      fs.writeFile modulePath, moduleJS, (err) ->
+        if err
+          printLine err.message
+        else if opts.compile and opts.watch
+          timeLog "compiled #{source}"
+
+    js = ' ' if js.length <= 0
+    fs.writeFile jsPath, js, (err) ->
+      if err
+        printLine err.message
+      else if opts.compile and opts.watch
+        timeLog "compiled #{source}"
+  path.exists jsDir, (exists) ->
+    if exists then compile() else exec "mkdir -p #{jsDir}", compile
+
 
 # Convenience for cleaner setTimeouts.
 wait = (milliseconds, func) -> setTimeout func, milliseconds

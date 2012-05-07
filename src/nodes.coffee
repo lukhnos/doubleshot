@@ -1963,6 +1963,8 @@ exports.ExternalModule = class ExternalModule extends Base
       capture = /^\"(.+)\"$/g
       match = capture.exec(@name)
       @name = match[1]
+      if !/.+\.js$/.exec(@name)
+        @name += ".js"
 
     # add .js extension if there isn't one
 
