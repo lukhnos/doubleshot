@@ -246,6 +246,13 @@ exports.Block = class Block extends Base
   # It would be better not to generate them in the first place, but for now,
   # clean up obvious double-parentheses.
   compileRoot: (o) ->
+    # CS399
+    console.log "root options received: #{JSON.stringify o}"
+    o.root    = this
+    @moduleNames = {}
+    @moduleCode = {}
+    modulePrelude = ""
+
     o.indent  = if o.bare then '' else TAB
     o.scope   = new Scope null, this, null
     o.level   = LEVEL_TOP
@@ -260,8 +267,18 @@ exports.Block = class Block extends Base
       prelude = "#{@compileNode merge(o, indent: '')}\n" if preludeExps.length
       @expressions = rest
     code = @compileWithDeclarations o
-    return code if o.bare
-    "#{prelude}(function() {\n#{code}\n}).call(this);\n"
+
+    # CS399
+    # emit module prelude
+    modulePrelude += "# CS399 module prelude\n\n"
+    console.log "emitted module prelude, module codes: #{JSON.stringify @moduleCode}"
+
+    # CS399
+    # return code if o.bare
+    # "#{prelude}(function() {\n#{code}\n}).call(this);\n"
+    return "#{modulePrelude}code" if o.bare
+    "#{modulePrelude}#{prelude}(function() {\n#{code}\n}).call(this);\n"
+
 
   # Compile the expressions body for the contents of a function, with
   # declarations of all inner variables pushed up to the top.
@@ -297,6 +314,26 @@ exports.Block = class Block extends Base
   @wrap: (nodes) ->
     return nodes[0] if nodes.length is 1 and nodes[0] instanceof Block
     new Block nodes
+
+  # CS399
+  declareModule: (name) ->
+    console.log "declared module: #{name}"
+    if @moduleNames[name]
+      return no
+    @moduleNames[name] = yes
+    yes
+
+  # CS399
+  assignModuleName: ->
+    console.log "assigned module name"
+    "someName"
+
+  # CS399
+  storeModuleCode: (name, code) ->
+    console.log "storing module \"#{name}\", length: #{code.length}"
+    @moduleCode[name] = code
+
+
 
 #### Literal
 
@@ -1915,10 +1952,11 @@ exports.If = class If extends Base
 #### CS399 extensions: ExternalModule
 exports.ExternalModule = class ExternalModule extends Base
   constructor: (@name, @code) ->
-
-    # assign name if there isn't one
-    if !@name
-      @name = "\"unnamed-module.js\""
+    # capture the actual name
+    if @name
+      capture = /^\"(.+)\"$/g
+      match = capture.exec(@name)
+      @name = match[1]
 
     # add .js extension if there isn't one
 
@@ -1934,12 +1972,29 @@ exports.ExternalModule = class ExternalModule extends Base
   compileNode: (o) ->
     console.log "Compiling module name: #{@name}"
 
-    o.indent  += TAB
-    actualCode = @code.compileRoot { bare: yes }
+    # assign name if there isn't one
+    if @name
+      check = o.root.declareModule @name
+      if !check
+        # show error!
+        console.log "error! duplicate module name: #{@name}"
+    else
+      @name = o.root.assignModuleName()
+
+    # create a new scope (hence overwriting the present, inherited scope)
+    o.scope = new Scope null, this, null
+    o.level = LEVEL_TOP
+    o.indent = ''
+    # o.bare = yes
+
+    # o.indent  += TAB
+    actualCode = @code.compile o
 
     console.log "using HTML5 worker" if o.worker
     console.log "using node.js process" if o.nodejsprocess
     console.log "emitting actual code:\n###################\n#{actualCode}\n###################\n"
+
+    o.root.storeModuleCode @name, actualCode
 
     # attach this.onmessage and stuff
 
