@@ -251,6 +251,8 @@ exports.Block = class Block extends Base
     o.root    = this
     @moduleNames = {}
     @moduleCode = {}
+    @unnamedModuleCounter = 0
+    @unnamedMoudleBasename = o.basename + "-worker-"
     modulePrelude = ""
 
     o.indent  = if o.bare then '' else TAB
@@ -325,8 +327,12 @@ exports.Block = class Block extends Base
 
   # CS399
   assignModuleName: ->
-    console.log "assigned module name"
-    "someName"
+    @unnamedModuleCounter++
+    name = @unnamedMoudleBasename + @unnamedModuleCounter + ".js"
+    # error handling
+    @declareModule name
+    console.log "assigned module name: #{name}"
+    name
 
   # CS399
   storeModuleCode: (name, code) ->
@@ -1999,7 +2005,7 @@ exports.ExternalModule = class ExternalModule extends Base
     # attach this.onmessage and stuff
 
     # return the module name in the case of HTML5 worker
-    "#{@name}"
+    "\"#{@name}\""
 
 
 

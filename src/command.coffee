@@ -319,7 +319,7 @@ parseOptions = ->
 
 # The compile-time options to pass to the CoffeeScript compiler.
 compileOptions = (filename) ->
-  {filename, bare: opts.bare, header: opts.compile, nodejsprocess: opts.nodejsprocess, worker: opts.worker}
+  {filename, bare: opts.bare, header: opts.compile, nodejsprocess: opts.nodejsprocess, worker: opts.worker, basename: path.basename(filename, path.extname(filename))}
 
 # Start up a new Node.js instance with the arguments in `--nodejs` passed to
 # the `node` binary, preserving the other options.
