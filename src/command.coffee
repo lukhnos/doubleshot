@@ -292,7 +292,7 @@ writeJsWithModules = (source, js, modules, base) ->
   jsPath = outputPath source, base
   jsDir  = path.dirname jsPath
 
-  console.log "writing modules, source: #{source}, base: #{base}, jsp: #{jsPath}, jsDir: #{jsDir}, #{JSON.stringify modules}"
+  console.log "writing modules, source: #{source}, base: #{base}, jsp: #{jsPath}, jsDir: #{jsDir}"
 
   compile = ->
     for name, moduleJS of modules

@@ -3,6 +3,14 @@
 # but some are created by other nodes as a method of code generation. To convert
 # the syntax tree into a string of JavaScript code, call `compile()` on the root.
 
+
+# CS399
+devlog = (str) ->
+  console.log
+
+nulllog = (str) ->
+
+
 {Scope} = require './scope'
 {RESERVED, STRICT_PROSCRIBED} = require './lexer'
 
@@ -247,7 +255,7 @@ exports.Block = class Block extends Base
   # clean up obvious double-parentheses.
   compileRoot: (o) ->
     # CS399
-    console.log "root options received: #{JSON.stringify o}"
+    nulllog "root options received: #{JSON.stringify o}"
     o.root    = this
     @moduleNames = {}
     @moduleCode = {}
@@ -273,7 +281,7 @@ exports.Block = class Block extends Base
     # CS399
     # emit module prelude
     modulePrelude += "# CS399 module prelude\n\n"
-    console.log "emitted module prelude, module codes: #{JSON.stringify @moduleCode}"
+    nulllog "emitted module prelude, module codes: #{JSON.stringify @moduleCode}"
 
     # CS399
     # return code if o.bare
@@ -319,7 +327,7 @@ exports.Block = class Block extends Base
 
   # CS399
   declareModule: (name) ->
-    console.log "declared module: #{name}"
+    nulllog "declared module: #{name}"
     if @moduleNames[name]
       return no
     @moduleNames[name] = yes
@@ -331,12 +339,12 @@ exports.Block = class Block extends Base
     name = @unnamedMoudleBasename + @unnamedModuleCounter + ".js"
     # error handling
     @declareModule name
-    console.log "assigned module name: #{name}"
+    nulllog "assigned module name: #{name}"
     name
 
   # CS399
   storeModuleCode: (name, code) ->
-    console.log "storing module \"#{name}\", length: #{code.length}"
+    nulllog "storing module \"#{name}\", length: #{code.length}"
     @moduleCode[name] = code
 
 
@@ -1970,7 +1978,7 @@ exports.ExternalModule = class ExternalModule extends Base
 
     # check if module of same name already exists
 
-    console.log "Captured module name: #{@name}"
+    nulllog "Captured module name: #{@name}"
 
   isAssignable: YES
 
@@ -1978,7 +1986,7 @@ exports.ExternalModule = class ExternalModule extends Base
     this
 
   compileNode: (o) ->
-    console.log "Compiling module name: #{@name}"
+    nulllog "Compiling module name: #{@name}"
 
     # assign name if there isn't one
     if @name
@@ -1998,9 +2006,9 @@ exports.ExternalModule = class ExternalModule extends Base
     # o.indent  += TAB
     actualCode = @code.compile o
 
-    console.log "using HTML5 worker" if o.worker
-    console.log "using node.js process" if o.nodejsprocess
-    console.log "emitting actual code:\n###################\n#{actualCode}\n###################\n"
+    nulllog "using HTML5 worker" if o.worker
+    nulllog "using node.js process" if o.nodejsprocess
+    nulllog "emitting actual code:\n###################\n#{actualCode}\n###################\n"
 
     o.root.storeModuleCode @name, actualCode
 
