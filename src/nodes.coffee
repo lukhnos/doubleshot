@@ -1998,13 +1998,13 @@ exports.ExternalModule = class ExternalModule extends Base
       @name = o.root.assignModuleName()
 
     # create a new scope (hence overwriting the present, inherited scope)
-    o.scope = new Scope null, this, null
+    o.scope = new Scope null, @code, null
     o.level = LEVEL_TOP
     o.indent = ''
     # o.bare = yes
 
     # o.indent  += TAB
-    actualCode = @code.compile o
+    actualCode = @code.compileWithDeclarations o
 
     nulllog "using HTML5 worker" if o.worker
     nulllog "using node.js process" if o.nodejsprocess
