@@ -2034,7 +2034,7 @@ exports.Spawn = class Spawn extends Base
     this
 
   compileNode: (o) ->
-    "(function() { var _worker = new Worker(#{@moduleExpression.compile o}); _worker.receive = function(d) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) {}; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
+    "(function() { var _worker = new Worker(#{@moduleExpression.compile o}); _worker.receive = function(d) {}; _worker.error = function(e) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) { this.error(e); }; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
 
 
 # Faux-Nodes
