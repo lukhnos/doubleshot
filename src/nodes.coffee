@@ -257,8 +257,8 @@ exports.Block = class Block extends Base
     # CS399
     nulllog "root options received: #{JSON.stringify o}"
     o.root    = this
-    @moduleNames = {}
-    @moduleCode = {}
+    @submoduleNames = {}
+    @submoduleCode = {}
     @unnamedModuleCounter = 0
     @unnamedMoudleBasename = o.basename + "-worker-"
     modulePrelude = ""
@@ -279,15 +279,38 @@ exports.Block = class Block extends Base
     code = @compileWithDeclarations o
 
     # CS399
-    # emit module prelude
-    modulePrelude += "// CS399 module prelude\n\n"
-    nulllog "emitted module prelude, module codes: #{JSON.stringify @moduleCode}"
+    # emit main program prelude
+    mainPrelude = ""
 
-    # CS399
+    if o.nodeprocess
+      mainPrelude += """// CS399 node.js process-based submodule prelude
+      var _cluster = require("cluster");
+      if (!_cluster.isMaster) {
+        var _submoduleCode = {};
+      """
+
+      for n, c of @submoduleCode
+        mainPrelude += "_submoduleCode[\"#{n}\"] = function() { #{c} };\n"
+
+
+      mainPrelude += """process.on('message', function(m) {
+        if (typeof m === "object" && typeof m._submodule_start === "string") {
+          // console.log("starting submodule: " + m._submodule_start);
+          _submoduleCode[m._submodule_start]();
+        }
+      });
+      """
+      mainPrelude += "return;\n}\n"
+
+      # remove @submoduleCode so that command.coffee won't produce those files
+      @submoduleCode = {}
+
+    ## CS399
     # return code if o.bare
     # "#{prelude}(function() {\n#{code}\n}).call(this);\n"
-    return "#{modulePrelude}code" if o.bare
-    "#{modulePrelude}#{prelude}(function() {\n#{code}\n}).call(this);\n"
+
+    return "#{mainPrelude}code" if o.bare
+    "#{mainPrelude}#{prelude}(function() {\n#{code}\n}).call(this);\n"
 
 
   # Compile the expressions body for the contents of a function, with
@@ -328,9 +351,9 @@ exports.Block = class Block extends Base
   # CS399
   declareModule: (name) ->
     nulllog "declared module: #{name}"
-    if @moduleNames[name]
+    if @submoduleNames[name]
       return no
-    @moduleNames[name] = yes
+    @submoduleNames[name] = yes
     yes
 
   # CS399
@@ -345,7 +368,7 @@ exports.Block = class Block extends Base
   # CS399
   storeModuleCode: (name, code) ->
     nulllog "storing module \"#{name}\", length: #{code.length}"
-    @moduleCode[name] = code
+    @submoduleCode[name] = code
 
 
 
@@ -2012,7 +2035,13 @@ exports.Submodule = class Submodule extends Base
 
       """
     else if o.nodeprocess
-      prelude = ""
+      prelude = """
+      var moduleSelf = { name: \"#{@name}\" };
+      moduleSelf.receive = function(m) {};
+      moduleSelf.reply = function(m) { process.send(m); };
+      process.on('message', function(m) { moduleSelf.receive(m); });
+
+      """
 
     actualCode = prelude + (@code.compileWithDeclarations o)
     o.root.storeModuleCode @name, actualCode
@@ -2020,7 +2049,7 @@ exports.Submodule = class Submodule extends Base
     "\"#{@name}\""
 
 exports.Spawn = class Spawn extends Base
-  constructor: (@moduleExpression) ->
+  constructor: (@submoduleExpression) ->
 
   isAssignable: YES
 
@@ -2031,7 +2060,24 @@ exports.Spawn = class Spawn extends Base
     if !o.worker && !o.nodeprocess
       throw new Error 'program that spawns submodules must be compiled with -W or -N'
 
-    "(function() { var _worker = new Worker(#{@moduleExpression.compile o}); _worker.receive = function(d) {}; _worker.error = function(e) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) { this.error(e); }; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
+    if o.worker
+      return "(function() { var _worker = new Worker(#{@submoduleExpression.compile o}); _worker.receive = function(d) {}; _worker.error = function(e) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) { this.error(e); }; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
+
+    if o.nodeprocess
+      return """
+      (function() {
+        var _process = _cluster.fork();
+        // console.log('forked process pid: ' + _process.pid);
+        _process.receive = function(m) {};
+        _process._send = _process.send;
+        _process.send = function(m) { this._send(m); };
+        _process.error = function(e) {};
+        _process._send({'_submodule_start':(#{@submoduleExpression.compile o})})
+        _process.on('message', function(m) { if (typeof m === "object" && typeof m._workerId === "number") { return; } _process.receive(m); });
+        return _process;
+      })()
+      """
+
 
 
 # Faux-Nodes

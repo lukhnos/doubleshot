@@ -292,12 +292,11 @@ writeJsWithModules = (source, js, modules, base) ->
   jsPath = outputPath source, base
   jsDir  = path.dirname jsPath
 
-  console.log "writing modules, source: #{source}, base: #{base}, jsp: #{jsPath}, jsDir: #{jsDir}"
-
   compile = ->
+    # CS399
     for name, moduleJS of modules
       modulePath = path.join jsDir, name
-      console.log "write: #{modulePath}"
+      console.log "write HTML5 submodule: #{modulePath}"
       fs.writeFile modulePath, moduleJS, (err) ->
         if err
           printLine err.message
