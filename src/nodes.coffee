@@ -1963,7 +1963,7 @@ exports.If = class If extends Base
     @soak and this
 
 
-#### CS399 extensions: ExternalModule
+#### CS399 extensions: Submodule
 exports.Submodule = class Submodule extends Base
   constructor: (@name, @code) ->
     # capture the actual name
@@ -1971,14 +1971,10 @@ exports.Submodule = class Submodule extends Base
       capture = /^\"(.+)\"$/g
       match = capture.exec(@name)
       @name = match[1]
+
+      # add .js extension if there isn't one
       if !/.+\.js$/.exec(@name)
         @name += ".js"
-
-    # add .js extension if there isn't one
-
-    # check if module of same name already exists
-
-    nulllog "Captured module name: #{@name}"
 
   isAssignable: YES
 
@@ -1986,15 +1982,16 @@ exports.Submodule = class Submodule extends Base
     this
 
   compileNode: (o) ->
-    nulllog "Compiling module name: #{@name}"
+    if !o.worker && !o.nodeprocess
+      throw new Error 'program that uses submodule must be compiled with -W or -N'
 
-    # assign name if there isn't one
+    # check submodule names
     if @name
       check = o.root.declareModule @name
       if !check
-        # show error!
-        console.log "error! duplicate module name: #{@name}"
+        throw new Error "duplicate submodule name: #{@name}"
     else
+      # assign name if there isn't one
       @name = o.root.assignModuleName()
 
     # create a new scope (hence overwriting the present, inherited scope)
@@ -2002,27 +1999,24 @@ exports.Submodule = class Submodule extends Base
     o.level = LEVEL_TOP
     o.indent = ''
     # o.bare = yes
-
     # o.indent  += TAB
-    workerPrelude = """// CS399 HTML5 worker setup code
-    var moduleSelf = { name: \"#{@name}\" };
-    moduleSelf.receive = function(m) {};
-    moduleSelf.reply = function(m) { postMessage(m); };
-    this.onmessage = function(e) { moduleSelf.receive(e.data); };
 
-    """
+    prelude = ""
 
-    actualCode = workerPrelude + (@code.compileWithDeclarations o)
+    if o.worker
+      prelude = """// CS399 HTML5 worker setup code
+      var moduleSelf = { name: \"#{@name}\" };
+      moduleSelf.receive = function(m) {};
+      moduleSelf.reply = function(m) { postMessage(m); };
+      this.onmessage = function(e) { moduleSelf.receive(e.data); };
 
-    nulllog "using HTML5 worker" if o.worker
-    nulllog "using node.js process" if o.nodejsprocess
-    nulllog "emitting actual code:\n###################\n#{actualCode}\n###################\n"
+      """
+    else if o.nodeprocess
+      prelude = ""
 
+    actualCode = prelude + (@code.compileWithDeclarations o)
     o.root.storeModuleCode @name, actualCode
 
-    # attach this.onmessage and stuff
-
-    # return the module name in the case of HTML5 worker
     "\"#{@name}\""
 
 exports.Spawn = class Spawn extends Base
@@ -2034,6 +2028,9 @@ exports.Spawn = class Spawn extends Base
     this
 
   compileNode: (o) ->
+    if !o.worker && !o.nodeprocess
+      throw new Error 'program that spawns submodules must be compiled with -W or -N'
+
     "(function() { var _worker = new Worker(#{@moduleExpression.compile o}); _worker.receive = function(d) {}; _worker.error = function(e) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) { this.error(e); }; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
 
 
