@@ -575,7 +575,7 @@ COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat COFFEE_ALIASES
 
 
 # CS399 extensions
-CS399_KEYWORDS = ['module']
+CS399_KEYWORDS = ['module', 'spawn']
 COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat CS399_KEYWORDS
 
 # The list of keywords that are reserved by JavaScript, but not used, or are

@@ -280,7 +280,7 @@ exports.Block = class Block extends Base
 
     # CS399
     # emit module prelude
-    modulePrelude += "# CS399 module prelude\n\n"
+    modulePrelude += "// CS399 module prelude\n\n"
     nulllog "emitted module prelude, module codes: #{JSON.stringify @moduleCode}"
 
     # CS399
@@ -2017,6 +2017,16 @@ exports.ExternalModule = class ExternalModule extends Base
     # return the module name in the case of HTML5 worker
     "\"#{@name}\""
 
+exports.Spawn = class Spawn extends Base
+  constructor: (@moduleExpression) ->
+
+  isAssignable: YES
+
+  makeReturn: (res) ->
+    this
+
+  compileNode: (o) ->
+    "(function() { var _worker = new Worker(#{@moduleExpression.compile o}); _worker.receive = function(d) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) {}; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
 
 
 # Faux-Nodes

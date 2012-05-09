@@ -101,6 +101,7 @@ grammar =
 
     # CS399 extension
     o 'Module'
+    o 'Spawn'
   ]
 
   # An indented block of expressions. Note that the [Rewriter](rewriter.html)
@@ -554,6 +555,10 @@ grammar =
     o 'MODULE Block',                           -> new ExternalModule null, $2
   ]
 
+  Spawn: [
+    o 'SPAWN Expression',                       -> new Spawn $2
+  ]
+
 
 # Precedence
 # ----------
@@ -583,6 +588,7 @@ operators = [
   ['right',     'FORIN', 'FOROF', 'BY', 'WHEN']
   ['right',     'IF', 'ELSE', 'FOR', 'WHILE', 'UNTIL', 'LOOP', 'SUPER', 'CLASS']
   ['right',     'POST_IF']
+  ['right',     'SPAWN']
 ]
 
 # Wrapping Up
