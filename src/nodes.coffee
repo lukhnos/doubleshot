@@ -1964,7 +1964,7 @@ exports.If = class If extends Base
 
 
 #### CS399 extensions: ExternalModule
-exports.ExternalModule = class ExternalModule extends Base
+exports.Submodule = class Submodule extends Base
   constructor: (@name, @code) ->
     # capture the actual name
     if @name
@@ -2004,7 +2004,15 @@ exports.ExternalModule = class ExternalModule extends Base
     # o.bare = yes
 
     # o.indent  += TAB
-    actualCode = @code.compileWithDeclarations o
+    workerPrelude = """// CS399 HTML5 worker setup code
+    var moduleSelf = { name: \"#{@name}\" };
+    moduleSelf.receive = function(m) {};
+    moduleSelf.reply = function(m) { postMessage(m); };
+    this.onmessage = function(e) { moduleSelf.receive(e.data); };
+
+    """
+
+    actualCode = workerPrelude + (@code.compileWithDeclarations o)
 
     nulllog "using HTML5 worker" if o.worker
     nulllog "using node.js process" if o.nodejsprocess

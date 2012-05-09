@@ -100,7 +100,7 @@ grammar =
     o 'Throw'
 
     # CS399 extension
-    o 'Module'
+    o 'Submodule'
     o 'Spawn'
   ]
 
@@ -550,9 +550,9 @@ grammar =
 
 
   # CS399 extensions
-  Module: [
-    o 'MODULE STRING Block',                    -> new ExternalModule $2, $3
-    o 'MODULE Block',                           -> new ExternalModule null, $2
+  Submodule: [
+    o 'SUBMODULE STRING Block',                 -> new Submodule $2, $3
+    o 'SUBMODULE Block',                        -> new Submodule null, $2
   ]
 
   Spawn: [
