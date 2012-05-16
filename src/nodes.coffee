@@ -2028,10 +2028,18 @@ exports.Submodule = class Submodule extends Base
 
     if o.worker
       prelude = """// CS399 HTML5 worker setup code
-      var moduleSelf = { name: \"#{@name}\" };
+      var moduleSelf = { name: \"#{@name}\", loadPath: "" };
       moduleSelf.receive = function(m) {};
       moduleSelf.reply = function(m) { postMessage(m); };
-      this.onmessage = function(e) { moduleSelf.receive(e.data); };
+      this.onmessage = function(e) {
+        if (typeof e.data === "object" && typeof e.data._submoduleLoadPath == "string") {
+          moduleSelf.loadPath = e.data._submoduleLoadPath;
+        }
+
+        this.onmessage = function(e) {
+          moduleSelf.receive(e.data);
+        };
+      };
 
       """
     else if o.nodeprocess
@@ -2046,7 +2054,18 @@ exports.Submodule = class Submodule extends Base
     actualCode = prelude + (@code.compileWithDeclarations o)
     o.root.storeModuleCode @name, actualCode
 
-    "\"#{@name}\""
+    if o.worker
+      return """(function() {
+        var _w = {};
+        _w.name = \"#{@name}\";
+        _w.loadPath = "";
+        if (typeof _submoduleLoadPath === "string") {
+          _w.loadPath = _submoduleLoadPath;
+        }
+        return _w;
+      })()"""
+    else
+      return "{name: \"#{@name}\"}"
 
 exports.Spawn = class Spawn extends Base
   constructor: (@submoduleExpression) ->
@@ -2061,18 +2080,38 @@ exports.Spawn = class Spawn extends Base
       throw new Error 'program that spawns submodules must be compiled with -W or -N'
 
     if o.worker
-      return "(function() { var _worker = new Worker(#{@submoduleExpression.compile o}); _worker.receive = function(d) {}; _worker.error = function(e) {}; _worker.onmessage = function(e){ this.receive(e.data); }; _worker.onerror = function(e) { this.error(e); }; _worker.send = function(m) { this.postMessage(m); }; return _worker; })()"
+      return """(function() {
+        var _wInfo = #{@submoduleExpression.compile o};
+        var _path = _wInfo.loadPath;
+        if (_path.length > 0 && !/\\/$/.exec(_path)) {
+          _path = _path.concat('/');
+        }
+        _path = _path.concat(_wInfo.name);
+        var _worker = new Worker(_path);
+        _worker.receive = function(d) {}; _worker.error = function(e) {};
+        _worker.onmessage = function(e){ this.receive(e.data); };
+        _worker.onerror = function(e) { this.error(e); };
+        _worker.send = function(m) { this.postMessage(m); };
+
+        if (typeof _submoduleLoadPath === "string") {
+          _worker.postMessage({_submoduleLoadPath: _submoduleLoadPath});
+        }
+        else {
+          _worker.postMessage({_submoduleLoadPath: ""});
+        }
+
+        return _worker;
+        })()"""
 
     if o.nodeprocess
-      return """
-      (function() {
+      return """(function() {
         var _process = _cluster.fork();
         // console.log('forked process pid: ' + _process.pid);
         _process.receive = function(m) {};
         _process._send = _process.send;
         _process.send = function(m) { this._send(m); };
         _process.error = function(e) {};
-        _process._send({'_submodule_start':(#{@submoduleExpression.compile o})})
+        _process._send({'_submodule_start':(#{@submoduleExpression.compile o}).name})
         _process.on('message', function(m) { if (typeof m === "object" && typeof m._workerId === "number") { return; } _process.receive(m); });
         return _process;
       })()
