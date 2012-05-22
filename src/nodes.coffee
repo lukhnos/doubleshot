@@ -2031,6 +2031,7 @@ exports.Submodule = class Submodule extends Base
       var moduleSelf = { name: \"#{@name}\", loadPath: "" };
       moduleSelf.receive = function(m) {};
       moduleSelf.reply = function(m) { postMessage(m); };
+      moduleSelf.close = function() { close(); };
       this.onmessage = function(e) {
         if (typeof e.data === "object" && typeof e.data._submoduleLoadPath == "string") {
           moduleSelf.loadPath = e.data._submoduleLoadPath;
@@ -2047,6 +2048,7 @@ exports.Submodule = class Submodule extends Base
       var moduleSelf = { name: \"#{@name}\" };
       moduleSelf.receive = function(m) {};
       moduleSelf.reply = function(m) { process.send(m); };
+      moduleSelf.close = function() { process.exit(0); };
       process.on('message', function(m) { moduleSelf.receive(m); });
 
       """
@@ -2093,6 +2095,8 @@ exports.Spawn = class Spawn extends Base
         _worker.onerror = function(e) { this.error(e); };
         _worker.send = function(m) { this.postMessage(m); };
 
+        // _worker.terminate is built-in
+
         if (typeof _submoduleLoadPath === "string") {
           _worker.postMessage({_submoduleLoadPath: _submoduleLoadPath});
         }
@@ -2111,7 +2115,8 @@ exports.Spawn = class Spawn extends Base
         _process._send = _process.send;
         _process.send = function(m) { this._send(m); };
         _process.error = function(e) {};
-        _process._send({'_submodule_start':(#{@submoduleExpression.compile o}).name})
+        _process._send({'_submodule_start':(#{@submoduleExpression.compile o}).name});
+        _process.terminate = function() { process.kill(this.pid); };
         _process.on('message', function(m) { if (typeof m === "object" && typeof m._workerId === "number") { return; } _process.receive(m); });
         return _process;
       })()
