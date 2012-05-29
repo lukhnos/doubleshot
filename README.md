@@ -38,9 +38,9 @@ across the different client- and server-side platforms by simply recompiling.
 
 DoubleShot adds two additional options to CoffeeScript`s `coffee` frontend:
 
-*   -N generates JavaScript code that runs on node.js
-*   -W generates JavaScript code, along with separate worker files, for HTML5
-    worker
+*   `-N` generates JavaScript code that runs on node.js
+*   `-W` generates JavaScript code, along with separate worker files, for
+    HTML5 worker
 
 ## Example
 
