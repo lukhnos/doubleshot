@@ -38,9 +38,9 @@ across the different client- and server-side platforms by simply recompiling.
 
 DoubleShot adds two additional options to CoffeeScript`s `coffee` frontend:
 
-* -N generates JavaScript code that runs on node.js
-* -W generates JavaScript code, along with separate worker files, for HTML5
-  worker
+*   -N generates JavaScript code that runs on node.js
+*   -W generates JavaScript code, along with separate worker files, for HTML5
+    worker
 
 ## Example
 
@@ -49,7 +49,7 @@ can be run on both node.js and web browser.
 
 To run on web browser:
 
-  coffee -Wc main.coffee
+    coffee -Wc main.coffee
 
 Then copy `index.html` and the generated `.js` files to a folder to which you
 have web server access. For security reasons most web browsers forbids loading
@@ -58,8 +58,8 @@ http://lukhnos.org/doubleshot/examples/basicworker/
 
 To run on node.js:
 
-  coffee -Nc main.coffee
-  node main.js
+    coffee -Nc main.coffee
+    node main.js
 
 Note that because of the way CoffeeScript and node.js cluster work (in short,
 the forked process does not start at the point it was forked), it is
@@ -71,8 +71,8 @@ compile it to JavaScript first then run it with `node`.
 
 It is easy to define a submodule:
 
-  foo = submodule 'foo-worker.js'   # the name is optional
-    # define the submoudle here
+    foo = submodule 'foo-worker.js'   # the name is optional
+        # define the submoudle here
 
 The name in the example `'foo-worker.js'` is optional. It's really only used
 when targeting HTML5 worker, and it tells the DoubleShot compiler to generate
@@ -81,10 +81,10 @@ numbered file name is assigned to each submodule.
 
 Once you have defined a submodule, you can spawn a worker off it:
 
-  worker = spawn foo
-  # setup the communication
-  worker.send 'a message'  # a string message
-  worker.send cmd:'run', iteration:10  # an object message
+    worker = spawn foo
+    # setup the communication
+    worker.send 'a message'  # a string message
+    worker.send cmd:'run', iteration:10  # an object message
 
 
 ## Setup the Communication between the Master and the Workers
@@ -94,28 +94,28 @@ message-passing mechanism. The master *sends* messages to the workers, and
 they *reply* to the messages. To setup how the master handles the response, do
 this:
 
-  worker = spawn foo
-  worker.receive = (msg) ->
-    # handle the receive here
+    worker = spawn foo
+    worker.receive = (msg) ->
+        # handle the receive here
 
 In the submodule, the setup is similiar. Note that in a submodule, we use the
 keyword `moduleSelf` to refer to the current program:
 
-  foo = submodule
-    moduleSelf.receive = (msg) ->
-      # do some computations
-      someReply = ...
-      moduleSelf.reply someReply
+    foo = submodule
+        moduleSelf.receive = (msg) ->
+            # do some computations
+            someReply = ...
+            moduleSelf.reply someReply
 
 
 ## Submodules Can Spawn Themselves (Limited Support)
 
 Submodules can spawn themselves:
 
-  foo = submodule
-    moduleSelf.receive = (msg) ->
-      # some work requires sub-workers
-      subworker = spawn moduleSelf
+    foo = submodule
+        moduleSelf.receive = (msg) ->
+            # some work requires sub-workers
+            subworker = spawn moduleSelf
 
 This corresponds to the HTML5 notion of *subworkers*. Unfortunately not every
 browser supports it. As of writing only Firefox supports subworkers. On the
@@ -127,14 +127,14 @@ it may be possible to modify the code.
 
 The worker can close itself:
 
-  moduleSelf.close()
+    moduleSelf.close()
 
 (Note that in CoffeeScript you have to add the parentheses to call a method
 with no arguments, otherwise you are just referring the method as an object.)
 
 Similarly, the master can force-terminate the worker:
 
-  worker.terminate()
+    worker.terminate()
 
 
 ## Error Handling
@@ -142,9 +142,9 @@ Similarly, the master can force-terminate the worker:
 If a worker runs into an error, and the error propagates to the master, the
 master can specify a handler for such error:
 
-  worker = spawn foo
-  worker.error = (err) ->
-    # handle the err
+    worker = spawn foo
+    worker.error = (err) ->
+        # handle the err
 
 To facilitate debugging, the handler currently only works for HTML5 worker
 errors. When targeting node.js, exception raised in the worker is not caught
@@ -161,21 +161,21 @@ Chrome supports relative path in the worker load URL, Firefox doesn't support
 it and you have to specify the full URL. This is a problem if your web site
 has a layout like this:
 
-  /
-  /index.html
-  /js
-  /js/main.js
-  /js/worker.js
+    /
+    /index.html
+    /js
+    /js/main.js
+    /js/worker.js
 
 To circumvent the problem, DoubleShot has a global variable with which you can specify the worker's load path (suppose the web site is example.com):
 
-  <!-- works in Chrome -->
-  <script>_submoduleLoadPath = "js/";</script>
+    <!-- works in Chrome -->
+    <script>_submoduleLoadPath = "js/";</script>
 
-  <!-- works in Firefox -->
-  <script>_submoduleLoadPath = "http://example.com/js/";</script>
+    <!-- works in Firefox -->
+    <script>_submoduleLoadPath = "http://example.com/js/";</script>
 
-  <script src="js/main.js"></script>
+    <script src="js/main.js"></script>
 
 Admittedly it's not an elegant solution. Better for the browser and standard
 makers to fix the problem.
