@@ -99,7 +99,7 @@ grammar =
     o 'Class'
     o 'Throw'
 
-    # CS399 extension
+    # DoubleShot extension
     o 'Submodule'
     o 'Spawn'
   ]
@@ -549,7 +549,7 @@ grammar =
   ]
 
 
-  # CS399 extensions
+  # DoubleShot extensions
   Submodule: [
     o 'SUBMODULE STRING Block',                 -> new Submodule $2, $3
     o 'SUBMODULE Block',                        -> new Submodule null, $2

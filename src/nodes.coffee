@@ -4,10 +4,6 @@
 # the syntax tree into a string of JavaScript code, call `compile()` on the root.
 
 
-# CS399
-devlog = (str) ->
-  console.log
-
 nulllog = (str) ->
 
 
@@ -254,7 +250,7 @@ exports.Block = class Block extends Base
   # It would be better not to generate them in the first place, but for now,
   # clean up obvious double-parentheses.
   compileRoot: (o) ->
-    # CS399
+    # DoubleShot
     nulllog "root options received: #{JSON.stringify o}"
     o.root    = this
     @submoduleNames = {}
@@ -278,12 +274,11 @@ exports.Block = class Block extends Base
       @expressions = rest
     code = @compileWithDeclarations o
 
-    # CS399
-    # emit main program prelude
+    # DoubleShot: emit main program prelude
     mainPrelude = ""
 
     if o.nodeprocess
-      mainPrelude += """// CS399 node.js process-based submodule prelude
+      mainPrelude += """// DoubleShot node.js process-based submodule prelude
       var _cluster = require("cluster");
       if (!_cluster.isMaster) {
         var _submoduleCode = {};
@@ -305,7 +300,7 @@ exports.Block = class Block extends Base
       # remove @submoduleCode so that command.coffee won't produce those files
       @submoduleCode = {}
 
-    ## CS399
+    ## DoubleShot modifications
     # return code if o.bare
     # "#{prelude}(function() {\n#{code}\n}).call(this);\n"
 
@@ -348,7 +343,7 @@ exports.Block = class Block extends Base
     return nodes[0] if nodes.length is 1 and nodes[0] instanceof Block
     new Block nodes
 
-  # CS399
+  # DoubleShot
   declareModule: (name) ->
     nulllog "declared module: #{name}"
     if @submoduleNames[name]
@@ -356,7 +351,7 @@ exports.Block = class Block extends Base
     @submoduleNames[name] = yes
     yes
 
-  # CS399
+  # DoubleShot
   assignModuleName: ->
     @unnamedModuleCounter++
     name = @unnamedMoudleBasename + @unnamedModuleCounter + ".js"
@@ -365,7 +360,7 @@ exports.Block = class Block extends Base
     nulllog "assigned module name: #{name}"
     name
 
-  # CS399
+  # DoubleShot
   storeModuleCode: (name, code) ->
     nulllog "storing module \"#{name}\", length: #{code.length}"
     @submoduleCode[name] = code
@@ -1986,7 +1981,7 @@ exports.If = class If extends Base
     @soak and this
 
 
-#### CS399 extensions: Submodule
+#### DoubleShot extensions: Submodule
 exports.Submodule = class Submodule extends Base
   constructor: (@name, @code) ->
     # capture the actual name
@@ -2027,7 +2022,7 @@ exports.Submodule = class Submodule extends Base
     prelude = ""
 
     if o.worker
-      prelude = """// CS399 HTML5 worker setup code
+      prelude = """// DoubleShot HTML5 worker setup code
       var moduleSelf = { name: \"#{@name}\", loadPath: "" };
       moduleSelf.receive = function(m) {};
       moduleSelf.reply = function(m) { postMessage(m); };

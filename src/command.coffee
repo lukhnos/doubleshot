@@ -133,15 +133,19 @@ compileScript = (file, input, base) ->
       sourceCode[sources.indexOf(t.file)] = t.input
       compileJoin()
     else
-      # CS399
+
+      ## DoubleShot modification
       # t.output = CoffeeScript.compile t.input, t.options
+
       output = CoffeeScript.compileWithExtraOutput t.input, t.options
       t.output = output.js
 
       CoffeeScript.emit 'success', task
       if o.print          then printLine t.output.trim()
-      # CS399
+
+      ## DoubleShot modification
       # else if o.compile   then writeJs t.file, t.output, base
+
       else if o.compile   then writeJsWithModules t.file, t.output, output.modules, base
       else if o.lint      then lint t.file, t.output
   catch err
@@ -286,14 +290,14 @@ writeJs = (source, js, base) ->
   path.exists jsDir, (exists) ->
     if exists then compile() else exec "mkdir -p #{jsDir}", compile
 
-# CS399
+# DoubleShot modification
 writeJsWithModules = (source, js, modules, base) ->
 
   jsPath = outputPath source, base
   jsDir  = path.dirname jsPath
 
   compile = ->
-    # CS399
+    # DoubleShot modification
     for name, moduleJS of modules
       modulePath = path.join jsDir, name
       console.log "write HTML5 submodule: #{modulePath}"

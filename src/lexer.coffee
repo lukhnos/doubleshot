@@ -574,9 +574,9 @@ COFFEE_ALIASES  = (key for key of COFFEE_ALIAS_MAP)
 COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat COFFEE_ALIASES
 
 
-# CS399 extensions
-CS399_KEYWORDS = ['submodule', 'spawn']
-COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat CS399_KEYWORDS
+# DoubleShot extensions
+DOUBLESHOT_KEYWORDS = ['submodule', 'spawn']
+COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat DOUBLESHOT_KEYWORDS
 
 # The list of keywords that are reserved by JavaScript, but not used, or are
 # used by CoffeeScript internally. We throw an error when these are encountered,
