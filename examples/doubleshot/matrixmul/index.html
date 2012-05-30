@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Web Worker Matrix Multiplication Example</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>   
+  <script src="matrixmul.js"></script>
+  <script>
+    var counter = 1;
+    
+    var run = function(dim, nWorker) {
+      runDemo(dim, nWorker, function(result, elapsed) {
+        var text = $('#log').html();
+        var msg = "run " + counter + ": ";
+        
+        msg += dim + "x" + dim + ", " + nWorker + "worker";
+        if (nWorker > 1) {
+          msg += "s";
+        }        
+        msg += ", total time: " + elapsed + " ms";
+        msg += "<br>";
+        
+        $('#log').html(text + msg);
+        counter++;
+      });
+    }
+  </script>
+</head>
+<body>
+  
+  <h1>Using HTML5 Worker to Perform Matrix Multiplication</h1>
+  <p>
+    <button type="button" onclick="run(100, 1);">100x100, 1 Worker</button>
+    <button type="button" onclick="run(100, 2);">100x100, 2 Workers</button>
+    <button type="button" onclick="run(100, 4);">100x100, 4 Workers</button>
+  </p>
+
+  <p>
+    <button type="button" onclick="run(500, 1);">500x500, 1 Worker</button>
+    <button type="button" onclick="run(500, 2);">500x500, 2 Workers</button>
+    <button type="button" onclick="run(500, 4);">500x500, 4 Workers</button>
+  </p>
+  
+  <p>Run log:</p>
+  <div id="log"></div>
+  
+</body>
+</html>

@@ -36,7 +36,7 @@ across the different client- and server-side platforms by simply recompiling.
 
 ## Compiling DoubleShot Programs
 
-DoubleShot adds two additional options to CoffeeScript`s `coffee` frontend:
+DoubleShot adds two additional options to CoffeeScript's `coffee` frontend:
 
 *   `-N` generates JavaScript code that runs on node.js
 *   `-W` generates JavaScript code, along with separate worker files, for
@@ -53,8 +53,15 @@ To run on web browser:
 
 Then copy `index.html` and the generated `.js` files to a folder to which you
 have web server access. For security reasons most web browsers forbids loading
-web workers from `file://` URLs. I've put up the example at
-http://lukhnos.org/doubleshot/examples/basicworker/
+web workers from `file://` URLs. I've put up some examples:
+
+*   A simple program in which the worker echoes back the master's message:
+    http://lukhnos.org/doubleshot/examples/basicworker/
+    
+*   Using web workers to do matrix multiplication
+    http://lukhnos.org/doubleshot/examples/matrixmul/
+
+Those examples can also run on node.js. See the `examples/` for details.
 
 To run on node.js:
 
