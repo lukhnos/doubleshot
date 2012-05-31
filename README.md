@@ -183,7 +183,8 @@ has a layout like this:
     /js/main.js
     /js/worker.js
 
-To circumvent the problem, DoubleShot has a global variable with which you can specify the worker's load path (suppose the web site is example.com):
+To circumvent the problem, DoubleShot has a global variable with which you can
+specify the worker's load path (suppose the web site is example.com):
 
     <!-- works in Chrome -->
     <script>_submoduleLoadPath = "js/";</script>
@@ -195,3 +196,11 @@ To circumvent the problem, DoubleShot has a global variable with which you can s
 
 Admittedly it's not an elegant solution. Better for the browser and standard
 makers to fix the problem.
+
+
+## Acknowledgments
+
+Professor John Mitchell of Stanford University inspired me to investigate the
+ways to add concurrency primitives to JavaScript, which led to the present
+form of this project.
+
