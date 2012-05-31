@@ -2044,7 +2044,7 @@ exports.Submodule = class Submodule extends Base
       moduleSelf.receive = function(m) {};
       moduleSelf.reply = function(m) { process.send(m); };
       moduleSelf.close = function() { process.exit(0); };
-      process.on('message', function(m) { moduleSelf.receive(m); });
+      process.on('message', function(m) { if (typeof m === "object" && typeof m._queryId === "number") { return; } moduleSelf.receive(m); });
 
       """
 
