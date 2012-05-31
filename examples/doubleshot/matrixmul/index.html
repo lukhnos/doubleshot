@@ -13,13 +13,14 @@
         var text = $('#log').html();
         var msg = "run " + counter + ": ";
         
-        msg += dim + "x" + dim + ", " + nWorker + "worker";
+        msg += dim + "x" + dim + ", " + nWorker + " worker";
         if (nWorker > 1) {
           msg += "s";
         }        
         msg += ", total time: " + elapsed + " ms";
         msg += "<br>";
         
+        $('#logheader').html("Previous Runs");
         $('#log').html(text + msg);
         counter++;
       });
@@ -41,8 +42,25 @@
     <button type="button" onclick="run(500, 4);">500x500, 4 Workers</button>
   </p>
   
-  <p>Run log:</p>
+  <h2>Synopsis</h2>
+  
+  <p>This is a more sophisticated sample for DoubleShot, demonstrating how to write a program with concurrent computation tasks. DoubleShot is a CoffeeScript dialect that adds cross-platform concurrency support to the base language. Read more about it on <a href="https://github.com/lukhnos/doubleshot">github</a>.</p>
+  
+  <p>In each of the test cases above, two random matrices are generated then get multiplied by one or more workers. On modern browsers each worker runs in its separate thread or process. For computations that take a long time, using workers has the benefit that it doesn't block the UI, making the user experience better. Since the master program and the workers communicate with a message-passing mechanism, jobs can be queued. You can try hitting the above buttons in quick succession to see that effect.</p>
+  
+  <p>This app does not try to implement efficient matrix multiplication nor effective matrix representations. The point is to show how you can use DoubleShot to simply the program organization.</p>
+  
+  <p>Since DoubleShot is cross-platform, this app can also be run as a standalone node.js program. See <a href="https://github.com/lukhnos/doubleshot/tree/master/examples/doubleshot/matrixmul">this page</a> for details.</p>
+  
+  <p>On a multicore machine, the 2-worker version runs anywhere from 10% to 30% faster than the 1-worker version (for the 500x500 data set), so indeed the browsers are using multiple cores. The reason we are not seeing a 80+% improvement is that passing large data structures between master and worker is expensive. There is a faster way to pass those data, but it is not supported by all browsers and it also involves changing the matrix representation, so I'm not doing it for the demo's purpose.</p>
+  
+  <h2 id="logheader"></h2>
   <div id="log"></div>
+  
+  <hr>
+  
+  <p>Copyright © 2012 Lukhnos Liu. Released under the same term as CoffeeScript's.</p>
+  
   
 </body>
 </html>
