@@ -33,7 +33,7 @@
   worker.error = (err) ->
     log "Error within worker: " + JSON.stringify(err)
 
-  # send the
+  # send the message
   worker.send(data)
 
 if typeof this.window == "undefined"
