@@ -1,7 +1,7 @@
 # DoubleShot: A CoffeeScript Dialect with Cross-Platform Concurrency Primitives
 
 DoubleShot is a CoffeeScript dialect that adds two concurrency primitives to
-the language: `submodule` and `spawn`. A submodule defines an
+the language: `submodule` and `asyncrun`. A submodule defines an
 independently-scoped program, which can be then spawned from the main program
 as workers. The main program and the workers communicate with a message
 passing mechanism.
@@ -88,7 +88,7 @@ numbered file name is assigned to each submodule.
 
 Once you have defined a submodule, you can spawn a worker off it:
 
-    worker = spawn foo
+    worker = asyncrun foo
     # setup the communication
     worker.send 'a message'  # a string message
     worker.send cmd:'run', iteration:10  # an object message
@@ -101,7 +101,7 @@ message-passing mechanism. The master *sends* messages to the workers, and
 they *reply* to the messages. To setup how the master handles the response, do
 this:
 
-    worker = spawn foo
+    worker = asyncrun foo
     worker.receive = (msg) ->
         # handle the receive here
 
@@ -122,7 +122,7 @@ Submodules can spawn themselves:
     foo = submodule
         moduleSelf.receive = (msg) ->
             # some work requires sub-workers
-            subworker = spawn moduleSelf
+            subworker = asyncrun moduleSelf
 
 This corresponds to the HTML5 notion of *subworkers*. Unfortunately not every
 browser supports it. As of writing only Firefox supports subworkers. On the
@@ -149,7 +149,7 @@ Similarly, the master can force-terminate the worker:
 If a worker runs into an error, and the error propagates to the master, the
 master can specify a handler for such error:
 
-    worker = spawn foo
+    worker = asyncrun foo
     worker.error = (err) ->
         # handle the err
 

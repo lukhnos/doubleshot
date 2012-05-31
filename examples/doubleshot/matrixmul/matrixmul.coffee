@@ -106,7 +106,7 @@ matMul = submodule
       toIndex = fromIndex + aSlice.length
       toIndex = aLen if toIndex > aLen
       console.log "spawning partition: #{partition} [#{fromIndex}, #{toIndex})"
-      mulTask = spawn matMul
+      mulTask = asyncrun matMul
       mulTask.receive = (msg) ->
         if msg.ack?
           console.log "received worker ack: " + msg.ack

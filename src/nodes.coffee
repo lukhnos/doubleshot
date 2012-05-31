@@ -2064,7 +2064,7 @@ exports.Submodule = class Submodule extends Base
     else
       return "{name: \"#{@name}\"}"
 
-exports.Spawn = class Spawn extends Base
+exports.Asyncrun = class Asyncrun extends Base
   constructor: (@submoduleExpression) ->
 
   isAssignable: YES

@@ -25,7 +25,7 @@
 
 
   log "Spawning worker with data: " + JSON.stringify(data)
-  worker = spawn workerModule
+  worker = asyncrun workerModule
 
   # set up the worker
   worker.receive = (data) ->

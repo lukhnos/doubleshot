@@ -575,7 +575,7 @@ COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat COFFEE_ALIASES
 
 
 # DoubleShot extensions
-DOUBLESHOT_KEYWORDS = ['submodule', 'spawn']
+DOUBLESHOT_KEYWORDS = ['submodule', 'asyncrun']
 COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat DOUBLESHOT_KEYWORDS
 
 # The list of keywords that are reserved by JavaScript, but not used, or are

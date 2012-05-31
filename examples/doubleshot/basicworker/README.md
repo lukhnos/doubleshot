@@ -41,7 +41,7 @@ I've also put up the sample app at: http://lukhnos.org/doubleshot/examples/basic
 The entry point of the main program, the `run` function, sets up a worker and
 then sends a message to the worker:
 
-    worker = spawn workerModule
+    worker = asyncrun workerModule
 
     # set up the worker
     worker.receive = (data) ->

@@ -101,7 +101,7 @@ grammar =
 
     # DoubleShot extension
     o 'Submodule'
-    o 'Spawn'
+    o 'Asyncrun'
   ]
 
   # An indented block of expressions. Note that the [Rewriter](rewriter.html)
@@ -555,8 +555,8 @@ grammar =
     o 'SUBMODULE Block',                        -> new Submodule null, $2
   ]
 
-  Spawn: [
-    o 'SPAWN Expression',                       -> new Spawn $2
+  Asyncrun: [
+    o 'ASYNCRUN Expression',                    -> new Asyncrun $2
   ]
 
 
@@ -588,7 +588,7 @@ operators = [
   ['right',     'FORIN', 'FOROF', 'BY', 'WHEN']
   ['right',     'IF', 'ELSE', 'FOR', 'WHILE', 'UNTIL', 'LOOP', 'SUPER', 'CLASS']
   ['right',     'POST_IF']
-  ['right',     'SPAWN']
+  ['right',     'ASYNCRUN']
 ]
 
 # Wrapping Up
