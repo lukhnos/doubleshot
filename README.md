@@ -73,6 +73,15 @@ the forked process does not start at the point it was forked), it is
 impossible to run the programs directly within `coffee`. That's why we need to
 compile it to JavaScript first then run it with `node`.
 
+In addition, these two sample that only run on node.js. It demonstrates how
+you can use DoubleShot for server-side programming:
+
+*   A rewritten version of node.js cluster server example using DoubleShot:
+    https://github.com/lukhnos/doubleshot/tree/master/examples/doubleshot/clusterserver
+    
+*   A contrived non-blocking server example:
+    https://github.com/lukhnos/doubleshot/tree/master/examples/doubleshot/nonblockingserver    
+
 
 ## Basic Syntax
 
