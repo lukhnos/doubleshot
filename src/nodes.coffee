@@ -2107,10 +2107,8 @@ exports.Asyncrun = class Asyncrun extends Base
         var _process = _cluster.fork();
         // console.log('forked process pid: ' + _process.pid);
         _process.receive = function(m) {};
-        _process._send = _process.send;
-        _process.send = function(m) { this._send(m); };
         _process.error = function(e) {};
-        _process._send({'_submodule_start':(#{@submoduleExpression.compile o}).name});
+        _process.send({'_submodule_start':(#{@submoduleExpression.compile o}).name});
         _process.terminate = function() { process.kill(this.pid); };
         _process.on('message', function(m) { if (typeof m === "object" && typeof m._workerId === "number") { return; } _process.receive(m); });
         return _process;
