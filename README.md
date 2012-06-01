@@ -20,7 +20,7 @@ primitives for CoffeeScript. The current HTML5 worker and node.js cluster
 library have their respective issues. The HTML5 standard requires workers to
 be loaded from separate URLs, meaning they have to be written as separate
 programs. There are non-standard ways to load the workers within the same
-program, but that is not supported in all modern browser and involves DOM
+program, but that is not supported in every modern browser and involves DOM
 manipulation. node.js cluster uses fork to implement the workers and requires
 delicate setup to separate the master and worker code.
 
