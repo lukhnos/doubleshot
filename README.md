@@ -207,6 +207,15 @@ Admittedly it's not an elegant solution. Better for the browser and standard
 makers to fix the problem.
 
 
+## Notes
+
+*   It's called `submodule` and `asyncrun` because the the program declared
+    inside is not really a standalone module, and the terms `module` and
+    `spawn` are already extensively used by node.js. Also `asyncrun` just
+    means what the term says: it runs the submodule program asynchronously in
+    another process or thread (depending on the platform implementation).
+
+
 ## Acknowledgments
 
 Professor John Mitchell of Stanford University inspired me to investigate the
