@@ -124,7 +124,7 @@ keyword `moduleSelf` to refer to the current program:
             moduleSelf.reply someReply
 
 
-## Submodules Can Spawn Themselves (Limited Support)
+## Submodules Can Spawn Themselves and Other Submodules (Limited Support)
 
 Submodules can spawn themselves:
 
@@ -132,6 +132,15 @@ Submodules can spawn themselves:
         moduleSelf.receive = (msg) ->
             # some work requires sub-workers
             subworker = asyncrun moduleSelf
+            
+It can also spawn other submodules:
+
+    foo = submodule
+        bar = submodule
+            # bar code here
+            
+        subworker = asyncrun bar
+        # setup and send messages
 
 This corresponds to the HTML5 notion of *subworkers*. Unfortunately not every
 browser supports it. As of writing only Firefox supports subworkers. On the
